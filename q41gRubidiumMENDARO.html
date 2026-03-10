@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="1st graded excersise movie list app using create and read operations with localStorage." />
+  <meta name="author" content="Zirjan Hero Mendaro" />
+  <meta name="theme-color" content="#0d6efd" />
+  <title>Q4 Seatwork 1 - Create and Read</title>
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --primary-hover: #0b5ed7;
+      --border: #d9d9d9;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --bg: #f5f7fb;
+      --warning: #facc15;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 0 0 14px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 0 0 14px;
+      text-align: center;
+    }
+
+    h3 {
+      margin: 18px 0 10px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+
+    .stars {
+      display: inline-flex;
+      gap: 4px;
+      user-select: none;
+      margin: 2px 0 10px;
+    }
+
+    .star {
+      font-size: 20px;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: transform 0.08s ease;
+    }
+
+    .star:hover {
+      transform: scale(1.05);
+    }
+
+    .star.active {
+      color: var(--warning);
+    }
+
+    .btn {
+      width: 100%;
+      height: 38px;
+      border: none;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .movie-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .movie-item {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .movie-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .movie-rating {
+      color: var(--warning);
+      white-space: nowrap;
+      font-size: 16px;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      background: #fcfcfd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>1st graded excersise</h1>
+
+    <div class="card">
+      <h2>Add a Movie</h2>
+
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input id="title" type="text" placeholder="Enter movie title" />
+      </div>
+
+      <div class="form-group">
+        <label for="year">Year:</label>
+        <input id="year" type="number" min="1800" max="3000" placeholder="e.g. 2025" />
+      </div>
+
+      <div class="form-group">
+        <label for="genre">Genre:</label>
+        <select id="genre">
+          <option value="">Select genre</option>
+          <option>Action</option>
+          <option>Comedy</option>
+          <option>Drama</option>
+          <option>Fantasy</option>
+          <option>Horror</option>
+          <option>Romance</option>
+          <option>Sci-Fi</option>
+          <option>Thriller</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Rating:</label>
+        <div class="stars" id="stars" aria-label="rating">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+      </div>
+
+      <button class="btn" id="addMovieBtn">Add Movie</button>
+
+      <h3>Movie List</h3>
+      <div id="movieList" class="movie-list"></div>
+      <p class="hint">Stars turn yellow when selected. Data is saved in localStorage.</p>
+    </div>
+  </div>
+
+  <script>
+    // Grab form and UI elements once so we can reuse them.
+    const titleInput = document.getElementById('title');
+    const yearInput = document.getElementById('year');
+    const genreSelect = document.getElementById('genre');
+    const addMovieBtn = document.getElementById('addMovieBtn');
+    const movieList = document.getElementById('movieList');
+    const starEls = Array.from(document.querySelectorAll('.star'));
+
+    // Current selected rating from the star UI (1 to 5).
+    let selectedRating = 0;
+
+    // Paint stars yellow up to selected value.
+    function paintStars(value) {
+      starEls.forEach((star, idx) => {
+        star.classList.toggle('active', idx < value);
+      });
+    }
+
+    // Read movies from localStorage. If invalid/missing, return empty array.
+    function loadMovies() {
+      try {
+        const raw = localStorage.getItem('movies');
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    // Save full movies array back to localStorage.
+    function saveMovies(movies) {
+      localStorage.setItem('movies', JSON.stringify(movies));
+    }
+
+    // Convert numeric rating to star string (example: 3 => ★★★☆☆).
+    function starsText(rating) {
+      const r = Number(rating) || 0;
+      return '★'.repeat(r) + '☆'.repeat(5 - r);
+    }
+
+    // Render the whole Movie List from localStorage data.
+    function renderMovies() {
+      const movies = loadMovies();
+      movieList.innerHTML = '';
+
+      if (movies.length === 0) {
+        movieList.innerHTML = '<div class="empty">No movies yet. Add your first movie.</div>';
+        return;
+      }
+
+      movies.forEach((movie) => {
+        const item = document.createElement('div');
+        item.className = 'movie-item';
+        item.innerHTML = `
+          <div>
+            <div><strong>${movie.title}</strong> <span class="movie-meta">(${movie.year})</span></div>
+            <div class="movie-meta">${movie.genre}</div>
+          </div>
+          <div class="movie-rating">${starsText(movie.rating)}</div>
+        `;
+        movieList.appendChild(item);
+      });
+    }
+
+    // Reset form fields and star selection after adding a movie.
+    function clearForm() {
+      titleInput.value = '';
+      yearInput.value = '';
+      genreSelect.value = '';
+      selectedRating = 0;
+      paintStars(0);
+    }
+
+    // Clicking a star sets the selected rating.
+    starEls.forEach((star) => {
+      star.addEventListener('click', () => {
+        selectedRating = Number(star.dataset.value);
+        paintStars(selectedRating);
+      });
+    });
+
+    // Create operation: validate input, append movie, persist, then re-render.
+    addMovieBtn.addEventListener('click', () => {
+      const title = titleInput.value.trim();
+      const year = yearInput.value.trim();
+      const genre = genreSelect.value;
+
+      if (!title || !year || !genre || selectedRating < 1) {
+        alert('Please complete Title, Year, Genre, and Rating.');
+        return;
+      }
+
+      const movie = {
+        title,
+        year,
+        genre,
+        rating: String(selectedRating)
+      };
+
+      const movies = loadMovies();
+      movies.push(movie);
+      saveMovies(movies);
+      renderMovies();
+      clearForm();
+    });
+
+    // Read operation on page load.
+    renderMovies();
+  </script>
+</body>
+</html>
