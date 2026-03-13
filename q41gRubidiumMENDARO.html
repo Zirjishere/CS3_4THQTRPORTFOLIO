@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="1st graded excersise movie list app using create and read operations with localStorage." />
+  <meta name="description" content="Movie list app using create, read, update, and delete operations with localStorage." />
   <meta name="author" content="Zirjan Hero Mendaro" />
   <meta name="theme-color" content="#0d6efd" />
-  <title>Q4 Seatwork 1 - Create and Read</title>
+  <title>Q4 Seatwork 1 - CRUD Movie List</title>
   <style>
     :root {
       --primary: #0d6efd;
@@ -18,6 +18,8 @@
       --card: #ffffff;
       --bg: #f5f7fb;
       --warning: #facc15;
+      --danger: #dc3545;
+      --danger-hover: #bb2d3b;
     }
 
     * {
@@ -145,6 +147,11 @@
       font-size: 14px;
     }
 
+    .movie-main {
+      flex: 1;
+      min-width: 0;
+    }
+
     .movie-meta {
       color: var(--muted);
       font-size: 13px;
@@ -154,6 +161,28 @@
       color: var(--warning);
       white-space: nowrap;
       font-size: 16px;
+      margin-right: 8px;
+    }
+
+    .movie-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-delete {
+      border: none;
+      border-radius: 6px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .btn-delete:hover {
+      background: var(--danger-hover);
     }
 
     .hint {
@@ -179,7 +208,7 @@
     <h1>1st graded excersise</h1>
 
     <div class="card">
-      <h2>Add a Movie</h2>
+      <h2>Add / Update a Movie Rating</h2>
 
       <div class="form-group">
         <label for="title">Title:</label>
@@ -221,11 +250,13 @@
 
       <h3>Movie List</h3>
       <div id="movieList" class="movie-list"></div>
-      <p class="hint">Stars turn yellow when selected. Data is saved in localStorage.</p>
+      <p class="hint">If title exists, movie is updated and rating is averaged. Delete requires confirmation.</p>
     </div>
   </div>
 
   <script>
+    const STORAGE_KEY = 'movies';
+
     // Grab form and UI elements once so we can reuse them.
     const titleInput = document.getElementById('title');
     const yearInput = document.getElementById('year');
@@ -247,7 +278,7 @@
     // Read movies from localStorage. If invalid/missing, return empty array.
     function loadMovies() {
       try {
-        const raw = localStorage.getItem('movies');
+        const raw = localStorage.getItem(STORAGE_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
         return Array.isArray(parsed) ? parsed : [];
       } catch (error) {
@@ -257,13 +288,13 @@
 
     // Save full movies array back to localStorage.
     function saveMovies(movies) {
-      localStorage.setItem('movies', JSON.stringify(movies));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
     }
 
     // Convert numeric rating to star string (example: 3 => ★★★☆☆).
     function starsText(rating) {
-      const r = Number(rating) || 0;
-      return '★'.repeat(r) + '☆'.repeat(5 - r);
+      const rounded = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+      return '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
     }
 
     // Render the whole Movie List from localStorage data.
@@ -276,18 +307,44 @@
         return;
       }
 
-      movies.forEach((movie) => {
+      movies.forEach((movie, index) => {
         const item = document.createElement('div');
         item.className = 'movie-item';
         item.innerHTML = `
-          <div>
+          <div class="movie-main">
             <div><strong>${movie.title}</strong> <span class="movie-meta">(${movie.year})</span></div>
             <div class="movie-meta">${movie.genre}</div>
           </div>
-          <div class="movie-rating">${starsText(movie.rating)}</div>
+          <div class="movie-actions">
+            <div class="movie-rating">${starsText(movie.rating)}</div>
+            <button class="btn-delete" data-index="${index}">Delete</button>
+          </div>
         `;
         movieList.appendChild(item);
       });
+
+      document.querySelectorAll('.btn-delete').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const index = Number(btn.dataset.index);
+          deleteMovie(index);
+        });
+      });
+    }
+
+    function deleteMovie(index) {
+      const movies = loadMovies();
+      if (!movies[index]) return;
+
+      const ok = confirm(`Are you sure you want to delete "${movies[index].title}"?`);
+      if (!ok) return;
+
+      movies.splice(index, 1);
+      saveMovies(movies);
+      renderMovies();
+    }
+
+    function normalizeTitle(value) {
+      return value.trim().toLowerCase();
     }
 
     // Reset form fields and star selection after adding a movie.
@@ -307,7 +364,7 @@
       });
     });
 
-    // Create operation: validate input, append movie, persist, then re-render.
+    // Create/Update operation: validate input, upsert movie, persist, then re-render.
     addMovieBtn.addEventListener('click', () => {
       const title = titleInput.value.trim();
       const year = yearInput.value.trim();
@@ -318,21 +375,37 @@
         return;
       }
 
-      const movie = {
-        title,
-        year,
-        genre,
-        rating: String(selectedRating)
-      };
-
       const movies = loadMovies();
-      movies.push(movie);
+      const existingIndex = movies.findIndex(
+        (movie) => normalizeTitle(movie.title) === normalizeTitle(title)
+      );
+
+      if (existingIndex >= 0) {
+        const oldRating = Number(movies[existingIndex].rating) || 0;
+        const newRating = Number(selectedRating) || 0;
+        const averagedRating = Math.round((oldRating + newRating) / 2);
+
+        movies[existingIndex] = {
+          title,
+          year,
+          genre,
+          rating: averagedRating
+        };
+      } else {
+        movies.push({
+          title,
+          year,
+          genre,
+          rating: Number(selectedRating)
+        });
+      }
+
       saveMovies(movies);
       renderMovies();
       clearForm();
     });
 
-    // Read operation on page load.
+    // Initial read/render on page load.
     renderMovies();
   </script>
 </body>
