@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <meta name="author" content="Sir Roy/Al Mendoza">
+  <meta name="author" content="Zirjan Hero F. Mendaro">
   <meta name="description" content="testing and debugging">
   <meta name="keywords" content="testing and debugging">
-  <title>CS3 </title>
+  <title>CS3 - Zirjan Hero F. Mendaro</title>
   <link href="style.css" rel="stylesheet" type="text/css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins:wght@300&family=Roboto&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-
+  
   <style>
     tr:nth-child(1) ~ tr:nth-child(odd) {
       background-color: lightgray;
@@ -42,7 +42,7 @@
       <a href="index.html#output">Output</a>
     </nav>
     
-    <h1 style="padding: 30px">Your Name / Section Mar 2026 </h1>
+    <h1 style="padding: 30px">Zirjan Hero F. Mendaro / 9 Rubidium - Mar 2026 </h1>
   </header>
 
   <section id="table">
@@ -56,63 +56,63 @@
       </tr>
       <tr>
         <td> 1 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> script.js line 1<br/>JS </td> 
+        <td> The function <code>plotPoint()</code> had no parameters even though the button passes 4 arguments. </td>
+        <td> Changed it to <code>function plotPoint(x0, y0, x, y)</code>. </td>
       </tr>
       <tr>
         <td> 2 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> script.js line 2<br/>JS </td> 
+        <td> Missing semicolon in <code>console.log(x0, y0, x, y)</code>. </td>
+        <td> Added a semicolon to complete the statement properly. </td>
       </tr>
       <tr>
         <td> 3 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> script.js line 7<br/>JS </td> 
+        <td> Used invalid property <code>point.styleleft</code>. </td>
+        <td> Replaced with <code>point.style.left</code>. </td>
       </tr>
       <tr>
         <td> 4 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> script.js line 8<br/>JS </td> 
+        <td> Used invalid property <code>point.stylebottom</code>. </td>
+        <td> Replaced with <code>point.style.bottom</code>. </td>
       </tr>
       <tr>
         <td> 5 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> script.js end block<br/>JS </td> 
+        <td> Function braces were incorrect in buggy version, causing parsing issues. </td>
+        <td> Corrected the closing brace structure so <code>plotPoint</code> closes properly. </td>
       </tr>
       <tr>
         <td> 6 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> style.css line 35<br/>CSS </td> 
+        <td> Hover selector was written as <code>nav a :hover</code> (wrong due to space). </td>
+        <td> Corrected to <code>nav a:hover</code>. </td>
       </tr>
       <tr>
         <td> 7 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> style.css line 28<br/>CSS </td> 
+        <td> <code>nav a</code> used <code>display: block</code>, so links stacked vertically. </td>
+        <td> Changed to <code>display: inline-block</code> so links stay on one line. </td>
       </tr>
       <tr>
         <td> 8 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> style.css lines 22-25<br/>CSS </td> 
+        <td> Navigation was not fixed at the top while scrolling. </td>
+        <td> Added <code>position: fixed; top: 0; left: 0; z-index: 1000;</code> to <code>nav</code>. </td>
       </tr>
       <tr>
         <td> 9 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> style.css line 94<br/>CSS </td> 
+        <td> Sprite image path was wrong (<code>sprites.png</code> not found at that path). </td>
+        <td> Corrected sprite path to <code>images/sprites.png</code>. </td>
       </tr>
       <tr>
         <td> 10 </td> 
-        <td> </td> 
-        <td> </td>
-        <td> </td>
+        <td> script.js after point creation<br/>JS </td> 
+        <td> Point needed absolute positioning for reliable <code>left</code>/<code>bottom</code> placement. </td>
+        <td> Added <code>point.style.position = 'absolute';</code>. </td>
       </tr>
      
     </table>
